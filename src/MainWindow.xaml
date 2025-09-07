@@ -1,0 +1,48 @@
+﻿<mah:MetroWindow x:Class="PipMyWindow.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        Title="PIP My Window"
+        Height="450"
+        Width="800"
+        FontFamily="Segoe UI"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+        WindowStyle="SingleBorderWindow"
+        ResizeMode="CanResizeWithGrip"
+        mc:Ignorable="d">
+
+    <Grid Margin="10">
+        <StackPanel x:Name="ControlPanel" VerticalAlignment="Top" Margin="10">
+            <TextBlock Text="Select a window to capture:"
+                       FontSize="16"
+                       Margin="0,0,0,5" />
+
+            <ComboBox x:Name="ProcessListComboBox"
+                      Width="300"
+                      DisplayMemberPath="Item2"
+                      SelectedValuePath="Item1" />
+
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <Button Click="ListRunningProcesses" ToolTip="Refresh running process list.">
+                    <iconPacks:PackIconMaterial Width="22" Height="22" Kind="Refresh" />
+                </Button>
+
+                <Button x:Name="StartButton"
+                                      Content="Start PIP"
+                                      Width="150"
+                                      Click="StartButton_Click" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Placeholder for captured content -->
+        <Border x:Name="PipContent"
+                Background="Black"
+                Visibility="Collapsed"
+                Margin="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch" />
+    </Grid>
+</mah:MetroWindow>
