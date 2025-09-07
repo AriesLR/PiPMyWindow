@@ -17,16 +17,16 @@ namespace PipMyWindow
             ListRunningProcesses();
         }
 
-        // Open PakMaster's GitHub Repo in the user's default browser
+        // Open PipMyWindow's GitHub Repo in the user's default browser
         private void LaunchBrowserGitHubPipMyWindow(object sender, RoutedEventArgs e)
         {
-            UrlService.OpenUrlAsync("https://github.com/AriesLR/PakMaster");
+            UrlService.OpenUrlAsync("https://github.com/AriesLR/PiPMyWindow");
         }
 
         // Check for updates via json
         private async void CheckForUpdates(object sender, RoutedEventArgs e)
         {
-            await UpdateService.CheckForUpdatesAsync("https://raw.githubusercontent.com/AriesLR/PakMaster/refs/heads/main/docs/version/update.json");
+            await UpdateService.CheckForUpdatesAsync("https://raw.githubusercontent.com/AriesLR/PiPMyWindow/refs/heads/main/docs/version/update.json");
         }
 
         // Import Win32 API for window handling
