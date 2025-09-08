@@ -9,6 +9,7 @@ namespace PipMyWindow
         private IntPtr sourceHandle;
         private IntPtr pipThumbnail = IntPtr.Zero;
         private PiPOverlayWindow pipOverlay;
+        private double aspectRatio;
 
         public PiPWindow(IntPtr targetWindowHandle)
         {
@@ -18,6 +19,8 @@ namespace PipMyWindow
             Topmost = true;
             ResizeMode = ResizeMode.CanResizeWithGrip;
             Loaded += PiPWindow_Loaded;
+
+            this.SizeChanged += PiPWindow_SizeChanged;
         }
 
         private void PiPWindow_Loaded(object sender, RoutedEventArgs e)
@@ -28,6 +31,28 @@ namespace PipMyWindow
 
             DwmRegisterThumbnail(wpfHandle, sourceHandle, out pipThumbnail);
             UpdateThumbnail();
+
+            // Sync window and DWM capture
+            GetWindowRect(sourceHandle, out RECT windowRect);
+            int windowWidth = windowRect.right - windowRect.left;
+            int windowHeight = windowRect.bottom - windowRect.top;
+            aspectRatio = (windowHeight > 0) ? (double)windowWidth / windowHeight : 1.0;
+
+            if (windowWidth > 0 && windowHeight > 0)
+            {
+                double defaultWidth = 480;
+                double initialWidth = defaultWidth;
+                double initialHeight = defaultWidth / aspectRatio;
+
+                if (initialWidth > windowWidth)
+                {
+                    initialWidth = windowWidth;
+                    initialHeight = windowHeight;
+                }
+
+                this.Width = initialWidth;
+                this.Height = initialHeight;
+            }
 
             SizeChanged += (s, ev) => UpdateThumbnail();
 
@@ -54,6 +79,34 @@ namespace PipMyWindow
 
             // Close overlay when PiP closes
             this.Closed += (s, ev) => pipOverlay?.Close();
+        }
+
+        // More aspect ratio preservation
+        private void PiPWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (aspectRatio <= 0 || double.IsNaN(aspectRatio) || double.IsInfinity(aspectRatio))
+                return;
+
+            double newWidth = e.NewSize.Width;
+            double newHeight = newWidth / aspectRatio;
+
+            if (Math.Abs(newHeight - e.NewSize.Height) > 1 && newHeight > 0 && double.IsFinite(newHeight))
+            {
+                this.Height = newHeight;
+            }
+            else
+            {
+                newHeight = e.NewSize.Height;
+                newWidth = newHeight * aspectRatio;
+
+                if (Math.Abs(newWidth - e.NewSize.Width) > 1 && newWidth > 0 && double.IsFinite(newWidth))
+                {
+                    this.Width = newWidth;
+                }
+            }
+
+            UpdateThumbnail();
+            UpdatepipOverlayPosition();
         }
 
         private void UpdatepipOverlayPosition()
